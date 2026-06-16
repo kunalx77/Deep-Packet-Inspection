@@ -1,0 +1,101 @@
+[
+    {
+        "label": "struct",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "struct",
+        "description": "struct",
+        "detail": "struct",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "PCAPWriter",
+        "kind": 6,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "class PCAPWriter:\n    def __init__(self, filename):\n        self.file = open(filename, 'wb')\n        self.write_global_header()\n        self.timestamp = 1700000000\n    def write_global_header(self):\n        # Magic, version 2.4, timezone 0, sigfigs 0, snaplen 65535, linktype Ethernet\n        header = struct.pack('<IHHIIII', 0xa1b2c3d4, 2, 4, 0, 0, 65535, 1)\n        self.file.write(header)\n    def write_packet(self, data):",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_ethernet_header",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_ethernet_header(src_mac, dst_mac, ethertype=0x0800):\n    return bytes.fromhex(dst_mac.replace(':', '')) + \\\n           bytes.fromhex(src_mac.replace(':', '')) + \\\n           struct.pack('>H', ethertype)\ndef create_ip_header(src_ip, dst_ip, protocol, payload_len):\n    version_ihl = 0x45\n    tos = 0\n    total_len = 20 + payload_len\n    ident = random.randint(1, 65535)\n    flags_frag = 0x4000  # Don't fragment",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_ip_header",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_ip_header(src_ip, dst_ip, protocol, payload_len):\n    version_ihl = 0x45\n    tos = 0\n    total_len = 20 + payload_len\n    ident = random.randint(1, 65535)\n    flags_frag = 0x4000  # Don't fragment\n    ttl = 64\n    checksum = 0\n    header = struct.pack('>BBHHHBBH',\n                         version_ihl, tos, total_len,",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_tcp_header",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_tcp_header(src_port, dst_port, seq, ack, flags, payload_len=0):\n    data_offset = 5 << 4  # 5 * 4 = 20 bytes\n    window = 65535\n    checksum = 0\n    urgent = 0\n    return struct.pack('>HHIIBBHHH',\n                       src_port, dst_port,\n                       seq, ack,\n                       data_offset, flags,\n                       window, checksum, urgent)",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_udp_header",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_udp_header(src_port, dst_port, payload_len):\n    length = 8 + payload_len\n    checksum = 0\n    return struct.pack('>HHHH', src_port, dst_port, length, checksum)\ndef create_tls_client_hello(sni):\n    \"\"\"Create a TLS Client Hello with SNI extension.\"\"\"\n    # SNI extension\n    sni_bytes = sni.encode('ascii')\n    sni_entry = struct.pack('>BH', 0, len(sni_bytes)) + sni_bytes\n    sni_list = struct.pack('>H', len(sni_entry)) + sni_entry",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_tls_client_hello",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_tls_client_hello(sni):\n    \"\"\"Create a TLS Client Hello with SNI extension.\"\"\"\n    # SNI extension\n    sni_bytes = sni.encode('ascii')\n    sni_entry = struct.pack('>BH', 0, len(sni_bytes)) + sni_bytes\n    sni_list = struct.pack('>H', len(sni_entry)) + sni_entry\n    sni_ext = struct.pack('>HH', 0x0000, len(sni_list)) + sni_list\n    # Supported versions extension (TLS 1.3)\n    supported_versions = struct.pack('>HHB', 0x002b, 3, 2) + struct.pack('>H', 0x0304)\n    # All extensions",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_http_request",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_http_request(host, path='/'):\n    return f\"GET {path} HTTP/1.1\\r\\nHost: {host}\\r\\nUser-Agent: DPI-Test/1.0\\r\\nAccept: */*\\r\\n\\r\\n\".encode()\ndef create_dns_query(domain):\n    # Transaction ID\n    txid = struct.pack('>H', random.randint(1, 65535))\n    # Flags: standard query\n    flags = struct.pack('>H', 0x0100)\n    # Questions: 1, Answers: 0, Authority: 0, Additional: 0\n    counts = struct.pack('>HHHH', 1, 0, 0, 0)\n    # Question section",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "create_dns_query",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def create_dns_query(domain):\n    # Transaction ID\n    txid = struct.pack('>H', random.randint(1, 65535))\n    # Flags: standard query\n    flags = struct.pack('>H', 0x0100)\n    # Questions: 1, Answers: 0, Authority: 0, Additional: 0\n    counts = struct.pack('>HHHH', 1, 0, 0, 0)\n    # Question section\n    question = b''\n    for label in domain.split('.'):",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "generate_test_pcap",
+        "description": "generate_test_pcap",
+        "peekOfCode": "def main():\n    writer = PCAPWriter('test_dpi.pcap')\n    # Source: User's machine\n    user_mac = '00:11:22:33:44:55'\n    user_ip = '192.168.1.100'\n    # Destination: Various servers\n    gateway_mac = 'aa:bb:cc:dd:ee:ff'\n    # Test cases with SNI\n    tls_connections = [\n        ('142.250.185.206', 'www.google.com', 443),",
+        "detail": "generate_test_pcap",
+        "documentation": {}
+    }
+]
